@@ -6,8 +6,12 @@ import (
 	"sync"
 )
 
+// IPCh .
+var IPCh chan *model.IP
+
 // Init 初始化ip代理池,返回所有代理ip对象
 func Init() []*model.IP {
+	IPCh = make(chan *model.IP, 100)
 	var wg sync.WaitGroup
 	funs := []func() []*model.IP{
 		//Data5u,

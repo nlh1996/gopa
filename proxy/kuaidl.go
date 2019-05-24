@@ -10,11 +10,11 @@ import (
 // KDL get ip from kuaidaili.com
 func KDL() (result []*model.IP) {
 	pollURL := "http://www.kuaidaili.com/free/inha/"
-	doc, _ := htmlquery.LoadURL(pollURL)
-	trNode, err := htmlquery.Find(doc, "//table[@class='table.table-bordered.table-striped']//tbody//tr")
+	doc, err := htmlquery.LoadURL(pollURL)
 	if err != nil {
-		clog.Warn(err.Error())
+		return
 	}
+	trNode, err := htmlquery.Find(doc, "//table[@class='table.table-bordered.table-striped']//tbody//tr")
 	for i := 0; i < len(trNode); i++ {
 		tdNode, _ := htmlquery.Find(trNode[i], "//td")
 		ip := htmlquery.InnerText(tdNode[0])

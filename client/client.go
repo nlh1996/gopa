@@ -1,9 +1,10 @@
 package client
 
 import (
-	"net/http"
+	"pachong/conf"
 	"pachong/conn"
 	"pachong/model"
+	"pachong/proxy"
 	"sync"
 	"time"
 
@@ -13,20 +14,27 @@ import (
 
 // Request 客户端发起请求,返回doc对象
 func Request(url string) (*goquery.Document, error) {
-	res, err := http.Get(url)
-	if err != nil {
-		return nil, err
+	agent := gorequest.New()
+	agent.Client.Timeout = 15 * time.Second
+	tempIP := <-proxy.IPCh
+	defer func() { proxy.IPCh <- tempIP }()
+	ip := "http://" + tempIP.Data
+	res, _, errs := agent.Proxy(ip).Get(url).End()
+	if errs != nil {
+		return nil, errs[0]
 	}
 	if res.StatusCode == 200 {
 		doc, err := goquery.NewDocumentFromReader(res.Body)
 		res.Body.Close()
 		return doc, err
 	}
-	return nil, err
+	res.Body.Close()
+	errs[0] = model.NewError("unkonw error!!!")
+	return nil, errs[0]
 }
 
 // CheckIP 检查ip代理池的有效ip,
-func CheckIP(ips []*model.IP, ipCh chan *model.IP) {
+func CheckIP(ips []*model.IP) {
 	const (
 		db  = "IPTABLE"
 		col = "ips"
@@ -39,7 +47,7 @@ func CheckIP(ips []*model.IP, ipCh chan *model.IP) {
 	for i := 0; i < len; i++ {
 		go func(i int) {
 			const (
-				pollURL = "http://httpbin.org/get"
+				pollURL = conf.CheckURL
 			)
 			var testIP string
 			if ips[i].Type2 == "https" {
@@ -59,16 +67,9 @@ func CheckIP(ips []*model.IP, ipCh chan *model.IP) {
 			}
 			defer resp.Body.Close()
 			if resp.StatusCode == 200 {
-				//harrybi 20180815 判断返回的数据格式合法性
-				// _, err := sj.NewFromReader(resp.Body)
-				// if err != nil {
-				// 	fmt.Println(testIP, pollURL, err)
-				// 	return
-				// }
-				//harrybi 计算该代理的速度，单位毫秒
 				ips[i].Speed = time.Now().Sub(begin).Nanoseconds() / 1000 / 1000 //ms
 				if ips[i].Speed < 1000 {
-					ipCh <- ips[i]
+					proxy.IPCh <- ips[i]
 					ips[i].Insert()
 				}
 			}

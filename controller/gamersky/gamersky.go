@@ -7,7 +7,6 @@ import (
 	"pachong/conn"
 	"pachong/model"
 	"regexp"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -15,7 +14,7 @@ import (
 const (
 	index = "https://www.gamersky.com/news/"
 	db    = "GamerSky"
-	col		= "news"
+	col   = "news"
 )
 
 // Init .
@@ -31,7 +30,6 @@ func Init() {
 	getNewsList(doc, &newsList, "a[class=tt]")
 	for i := range newsList {
 		getNews(newsList[i])
-		time.Sleep(200 * time.Millisecond)
 	}
 }
 
