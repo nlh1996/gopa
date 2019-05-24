@@ -12,7 +12,7 @@ func Init() []*model.IP {
 	funs := []func() []*model.IP{
 		//Data5u,
 		Feiyi,
-		IP66, //need to remove it
+		//IP66, //need to remove it
 		KDL,
 		//GBJ,	//因为网站限制，无法正常下载数据
 		//Xici,

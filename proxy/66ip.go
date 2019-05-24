@@ -23,7 +23,6 @@ func IP66() (result []*model.IP) {
 	}
 
 	if resp.StatusCode != 200 {
-		log.Println(err)
 		return
 	}
 	defer resp.Body.Close()

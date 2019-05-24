@@ -14,7 +14,6 @@ type IP struct {
 	Speed int64
 }
 
-
 // Insert 插入ip到数据库
 func (obj *IP) Insert() {
 	_, err := conn.GetCol().InsertOne(utils.GetCtx(), obj)
