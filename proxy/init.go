@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-// IPCh .
+// IPCh 使用通道作为本爬虫框架的代理ip池，可全局调用.
 var IPCh chan *model.IP
 
 // Init 爬取所有的代理ip
@@ -31,9 +31,7 @@ func Init() []*model.IP {
 		wg.Add(1)
 		go func(f func() []*model.IP) {
 			temp := f()
-			//log.Println("[run] get into loop")
 			for _, v := range temp {
-				//log.Println("[run] len of ipChan %v",v)
 				ips = append(ips, v)
 			}
 			wg.Done()

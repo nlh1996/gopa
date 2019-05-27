@@ -27,7 +27,7 @@ func Init() {
 		log.Println(err)
 	}
 	var newsList []string
-	getNewsList(doc, &newsList, "a[class=tt]")
+	getNewsList(doc, &newsList)
 	var wg sync.WaitGroup
 	for i := range newsList {
 		wg.Add(1)
@@ -37,9 +37,9 @@ func Init() {
 }
 
 // 获取所有新闻链接
-func getNewsList(doc *goquery.Document, newsList *[]string, str string) {
+func getNewsList(doc *goquery.Document, newsList *[]string) {
 	// '//a[@class="tt"]/@href'
-	doc.Find(str).Each(func(i int, selection *goquery.Selection) {
+	doc.Find("a[class=tt]").Each(func(i int, selection *goquery.Selection) {
 		url, _ := selection.Attr("href")
 		*newsList = append(*newsList, url)
 	})

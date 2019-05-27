@@ -2,7 +2,7 @@ package conn
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"pachong/conf"
 	"time"
 
@@ -12,9 +12,9 @@ import (
 
 // Env .
 type Env struct {
-	client		 *mongo.Client
-	db  			 *mongo.Database
-	col 			 *mongo.Collection
+	client *mongo.Client
+	db     *mongo.Database
+	col    *mongo.Collection
 }
 
 var mgo *Env
@@ -27,8 +27,14 @@ func Init() {
 	ctxWithTimeout, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	err = mgo.client.Connect(ctxWithTimeout)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
+	// Check the connection
+	err = mgo.client.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Connected to MongoDB!")
 }
 
 // GetCol .

@@ -11,6 +11,8 @@ func main() {
 	conn.Init()
 	ips := proxy.Init()
 	client.CheckIP(ips)
+
+	// 爬虫demo
 	gamersky.Init()
 	// hoperun.Init()
 }

@@ -88,3 +88,51 @@ func CheckIP(ips []*model.IP) {
 	}
 	wg.Wait()
 }
+
+// CheckDBIP 检查数据库中的有效ip
+func CheckDBIP() {
+	const (
+		db  = "IPTABLE"
+		col = "ips"
+	)
+	conn.SetDB(db)
+	conn.SetCol(col)
+	ip := &model.IP{}
+	ip.FindAll()
+	var wg sync.WaitGroup
+	len := len(ips)
+	wg.Add(len)
+	for i := 0; i < len; i++ {
+		go func(i int) {
+			const (
+				pollURL = conf.CheckURL
+			)
+			var testIP string
+			if ips[i].Type2 == "https" {
+				testIP = "https://" + ips[i].Data
+			} else {
+				testIP = "http://" + ips[i].Data
+			}
+
+			begin := time.Now()
+			agent := gorequest.New()
+			// 设置2s超时时间，以防长时间不响应
+			agent.Client.Timeout = 2 * time.Second
+			resp, _, errs := agent.Proxy(testIP).Get(pollURL).End()
+			if errs != nil {
+				wg.Done()
+				return
+			}
+			defer resp.Body.Close()
+			if resp.StatusCode == 200 {
+				ips[i].Speed = time.Now().Sub(begin).Nanoseconds() / 1000 / 1000 //ms
+				if ips[i].Speed < 1000 {
+					proxy.IPCh <- ips[i]
+					ips[i].Insert()
+				}
+			}
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+}

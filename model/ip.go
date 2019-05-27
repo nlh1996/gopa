@@ -21,3 +21,12 @@ func (obj *IP) Insert() {
 		log.Println(err.Error())
 	}
 }
+
+// FindAll 得到所有ip
+func (obj *IP) FindAll() {
+	result := &[]IP{}
+	err := conn.GetCol().Find(utils.GetCtx(), nil).Decode(result)
+	if err != nil {
+		log.Println(err.Error())
+	}
+}
