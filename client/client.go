@@ -13,6 +13,11 @@ import (
 	"github.com/parnurzeal/gorequest"
 )
 
+const (
+	db  = "IPTABLE"
+	col = "ips"
+)
+
 // Request 客户端发起请求,返回doc对象
 func Request(url string) (*goquery.Document, error) {
 	agent := gorequest.New()
@@ -25,6 +30,7 @@ func Request(url string) (*goquery.Document, error) {
 		errs []error
 	)
 	var index int
+	// 更换代理ip重复请求,直到请求成功或者超过请求限制（防止请求死循环）
 	for res == nil || res.StatusCode != 200 {
 		index ++
 		res, _, errs = agent.Proxy(ip).Get(url).End()
@@ -45,10 +51,6 @@ func Request(url string) (*goquery.Document, error) {
 
 // CheckIP 检查ip代理池的有效ip,
 func CheckIP(ips []*model.IP) {
-	const (
-		db  = "IPTABLE"
-		col = "ips"
-	)
 	conn.SetDB(db)
 	conn.SetCol(col)
 	var wg sync.WaitGroup
@@ -91,10 +93,6 @@ func CheckIP(ips []*model.IP) {
 
 // CheckDBIP 检查数据库中的有效ip
 func CheckDBIP() {
-	const (
-		db  = "IPTABLE"
-		col = "ips"
-	)
 	conn.SetDB(db)
 	conn.SetCol(col)
 	ip := &model.IP{}
