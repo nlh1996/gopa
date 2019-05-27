@@ -28,8 +28,9 @@ func Request(url string) (*goquery.Document, error) {
 	var (
 		res  gorequest.Response
 		errs []error
+		index int
 	)
-	var index int
+
 	// 更换代理ip重复请求,直到请求成功或者超过请求限制（防止请求死循环）
 	for res == nil || res.StatusCode != 200 {
 		index ++
@@ -80,7 +81,7 @@ func CheckIP(ips []*model.IP) {
 			defer resp.Body.Close()
 			if resp.StatusCode == 200 {
 				ips[i].Speed = time.Now().Sub(begin).Nanoseconds() / 1000 / 1000 //ms
-				if ips[i].Speed < 1000 {
+				if ips[i].Speed < 1500 {
 					proxy.IPCh <- ips[i]
 					ips[i].Insert()
 				}
