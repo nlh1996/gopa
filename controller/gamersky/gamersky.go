@@ -7,6 +7,7 @@ import (
 	"pachong/conn"
 	"pachong/model"
 	"regexp"
+	"sync"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -24,13 +25,15 @@ func Init() {
 	doc, err := client.Request(index)
 	if err != nil {
 		log.Println(err)
-		return
 	}
 	var newsList []string
 	getNewsList(doc, &newsList, "a[class=tt]")
+	var wg sync.WaitGroup
 	for i := range newsList {
-		getNews(newsList[i])
+		wg.Add(1)
+		go getNews(newsList[i], &wg)
 	}
+	wg.Wait()
 }
 
 // 获取所有新闻链接
@@ -43,10 +46,11 @@ func getNewsList(doc *goquery.Document, newsList *[]string, str string) {
 }
 
 // 爬取新闻内容
-func getNews(url string) {
+func getNews(url string, wg *sync.WaitGroup) {
 	doc, err := client.Request(url)
 	if err != nil {
 		log.Println(err)
+		wg.Done()
 		return
 	}
 
@@ -59,6 +63,7 @@ func getNews(url string) {
 	})
 
 	if news.Title == "" {
+		wg.Done()
 		return
 	}
 
@@ -74,4 +79,5 @@ func getNews(url string) {
 	timeString := reg.FindAllString(tmpTime, -1)
 	news.PubTime = fmt.Sprintf("%s %s", timeString[0], timeString[1])
 	news.Insert()
+	wg.Done()
 }

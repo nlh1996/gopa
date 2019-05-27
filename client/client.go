@@ -1,6 +1,7 @@
 package client
 
 import (
+	"log"
 	"pachong/conf"
 	"pachong/conn"
 	"pachong/model"
@@ -19,9 +20,18 @@ func Request(url string) (*goquery.Document, error) {
 	tempIP := <-proxy.IPCh
 	defer func() { proxy.IPCh <- tempIP }()
 	ip := "http://" + tempIP.Data
-	res, _, errs := agent.Proxy(ip).Get(url).End()
-	if errs != nil {
-		return nil, errs[0]
+	var (
+		res  gorequest.Response
+		errs []error
+	)
+	for res == nil {
+		res, _, errs = agent.Proxy(ip).Get(url).End()
+		if errs != nil {
+			log.Println(errs[0])
+			proxy.IPCh <- tempIP
+			tempIP = <-proxy.IPCh
+			ip = "http://" + tempIP.Data
+		}
 	}
 	if res.StatusCode == 200 {
 		doc, err := goquery.NewDocumentFromReader(res.Body)
@@ -29,8 +39,8 @@ func Request(url string) (*goquery.Document, error) {
 		return doc, err
 	}
 	res.Body.Close()
-	errs[0] = model.NewError("unkonw error!!!")
-	return nil, errs[0]
+	err := model.NewError("unkonw error!!!")
+	return nil, err
 }
 
 // CheckIP 检查ip代理池的有效ip,
