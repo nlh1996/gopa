@@ -30,7 +30,7 @@ func Init() {
 		log.Fatal(err)
 	}
 	// Check the connection
-	err = mgo.client.Ping(context.TODO(), nil)
+	err = mgo.client.Ping(ctxWithTimeout, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
