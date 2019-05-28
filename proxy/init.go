@@ -19,7 +19,7 @@ func Init() []*model.IP {
 		//IP66, //need to remove it
 		KDL,
 		//GBJ,	//因为网站限制，无法正常下载数据
-		//Xici,
+		Xici,
 		//XDL,
 		//IP181,  // 已经无法使用
 		//YDL,	//失效的采集脚本，用作系统容错实验

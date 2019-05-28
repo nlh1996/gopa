@@ -2,43 +2,37 @@ package proxy
 
 import (
 	"log"
+	"net/http"
 	"pachong/model"
-	"regexp"
-	"strings"
 
-	"github.com/nladuo/go-phantomjs-fetcher"
+	"github.com/PuerkitoBio/goquery"
 )
 
 // Xici get ip from xicidaili.com
 func Xici() (result []*model.IP) {
 	pollURL := "http://www.xicidaili.com/nn/"
-
-	fetcher, err := phantomjs.NewFetcher(2017, nil)
-	defer fetcher.ShutDownPhantomJSServer()
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", pollURL, nil)
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
+	req.Header.Add("If-None-Match", "W/\"25a308c48a1a3215afe70ed6aba0361e\"")
+	req.Header.Add("Upgrade-Insecure-Requests", "1")
+	resp, err := client.Do(req)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	jsScript := "function() {s=document.documentElement.outerHTML;document.write('<body></body>');document.body.innerText=s;}"
-	jsRunAt := phantomjs.RUN_AT_DOC_END
-	resp, err := fetcher.GetWithJS(pollURL, jsScript, jsRunAt)
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	re, _ := regexp.Compile("<td>(\\d+\\.){3}\\d+</td>.+?(\\d{2,4})</td>")
-	temp := re.FindAllString(strings.Replace(strings.Replace(resp.Content, "&lt;", "<", -1), "&gt;", ">", -1), -1)
-
-	for _, v := range temp {
-		v = strings.Replace(v, "<td>", "", -1)
-		v = strings.Replace(v, "</td>", "", -1)
-		v = strings.Replace(v, " ", "", -1)
-		v = strings.Replace(v, "<br>", ":", -1)
+	doc.Find("tr>td:nth-child(2)").Each(func(i int, selection *goquery.Selection) {
 		ip := &model.IP{}
-		ip.Data = v
+		ip.Data = selection.Text()
+		ip.Data = ip.Data + ":" + selection.Next().Text()
 		ip.Type1 = "http"
 		result = append(result, ip)
-	}
-	log.Println("Xici done.")
+	})
 	return
 }

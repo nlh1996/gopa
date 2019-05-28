@@ -9,7 +9,7 @@ import (
 func main() {
 	conn.Init()
 	ips := proxy.Init()
-	/*以下两种ip代理池二选一 */
+	/* 以下两种ip代理池二选一 */
 	// 抓取最新的代理ip
 	client.CheckIP(ips)
 
