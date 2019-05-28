@@ -19,8 +19,8 @@ const (
 
 // CheckIP 检查ip代理池的有效ip,
 func CheckIP(ips []*model.IP) {
-	conn.SetDB(db)
-	conn.SetCol(col)
+	// conn.SetDB(db)
+	// conn.SetCol(col)
 	var wg sync.WaitGroup
 	len := len(ips)
 	wg.Add(len)
@@ -50,7 +50,7 @@ func CheckIP(ips []*model.IP) {
 				ips[i].Speed = time.Now().Sub(begin).Nanoseconds() / 1000 / 1000 //ms
 				if ips[i].Speed < 1500 {
 					proxy.IPCh <- ips[i]
-					ips[i].Insert()
+					// ips[i].Insert()
 				}
 			}
 			wg.Done()

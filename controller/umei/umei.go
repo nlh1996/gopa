@@ -3,7 +3,6 @@ package umei
 import (
 	"fmt"
 	"pachong/client"
-	"pachong/conn"
 	"regexp"
 	"sync"
 
@@ -18,8 +17,8 @@ const (
 
 // Init .
 func Init() {
-	conn.SetDB(db)
-	conn.SetCol(col)
+	// conn.SetDB(db)
+	// conn.SetCol(col)
 	doc, err := client.Get(index)
 	if err != nil {
 		fmt.Println(err)

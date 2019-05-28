@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"pachong/conf"
+	"pachong/utils"
 )
 
 // DownLoadImg 图片下载.
@@ -15,17 +15,16 @@ func DownLoadImg(imgURL string, fileName string) {
 		fmt.Println(err)
 		return
 	}
+	path := utils.GetCurrentDirectory()
+	path = path + "/download/"
 	// 获得get请求响应的reader对象
 	reader := bufio.NewReaderSize(res.Body, 32*1024)
-	// 判断目录是否存在
-	info, err := os.Stat(conf.ImgPath)
-	if os.IsNotExist(err) {
-		// 创建目录
-		if err := os.MkdirAll(conf.ImgPath, os.ModePerm); err != nil {
-			fmt.Println(err,info)
-		}
+	// 创建目录
+	if err := os.MkdirAll(path, os.ModePerm); err != nil {
+		fmt.Println(err)
 	}
-	file, err := os.Create(conf.ImgPath + fileName)
+
+	file, err := os.Create(path + fileName)
 	if err != nil {
 		fmt.Println(err)
 		return

@@ -2,13 +2,12 @@ package main
 
 import (
 	"pachong/client"
-	"pachong/conn"
 	"pachong/controller/umei"
 	"pachong/proxy"
 )
 
 func main() {
-	conn.Init()
+	// conn.Init()
 	ips := proxy.Init()
 	/*以下两种ip代理池二选一 */
 	// 抓取最新的代理ip
