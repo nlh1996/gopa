@@ -2,20 +2,11 @@ package client
 
 import (
 	"log"
-	"pachong/conf"
-	"pachong/conn"
-	"pachong/model"
 	"pachong/proxy"
-	"sync"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/parnurzeal/gorequest"
-)
-
-const (
-	db  = "IPTABLE"
-	col = "ips"
 )
 
 // Request 客户端发起请求,返回doc对象
@@ -26,14 +17,14 @@ func Request(url string) (*goquery.Document, error) {
 	defer func() { proxy.IPCh <- tempIP }()
 	ip := "http://" + tempIP.Data
 	var (
-		res  gorequest.Response
-		errs []error
+		res   gorequest.Response
+		errs  []error
 		index int
 	)
 
 	// 更换代理ip重复请求,直到请求成功或者超过请求限制（防止请求死循环）
 	for res == nil || res.StatusCode != 200 {
-		index ++
+		index++
 		res, _, errs = agent.Proxy(ip).Get(url).End()
 		if errs != nil {
 			log.Println(errs[0])
@@ -45,94 +36,57 @@ func Request(url string) (*goquery.Document, error) {
 			}
 		}
 	}
-	doc, err := goquery.NewDocumentFromReader(res.Body)
 	res.Body.Close()
-	return doc, err
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
 }
 
-// CheckIP 检查ip代理池的有效ip,
-func CheckIP(ips []*model.IP) {
-	conn.SetDB(db)
-	conn.SetCol(col)
-	var wg sync.WaitGroup
-	len := len(ips)
-	wg.Add(len)
-	for i := 0; i < len; i++ {
-		go func(i int) {
-			const (
-				pollURL = conf.CheckURL
-			)
-			var testIP string
-			if ips[i].Type2 == "https" {
-				testIP = "https://" + ips[i].Data
-			} else {
-				testIP = "http://" + ips[i].Data
-			}
-
-			begin := time.Now()
-			agent := gorequest.New()
-			// 设置2s超时时间，以防长时间不响应
-			agent.Client.Timeout = 5 * time.Second
-			resp, _, errs := agent.Proxy(testIP).Get(pollURL).End()
-			if errs != nil {
-				wg.Done()
-				return
-			}
-			defer resp.Body.Close()
-			if resp.StatusCode == 200 {
-				ips[i].Speed = time.Now().Sub(begin).Nanoseconds() / 1000 / 1000 //ms
-				if ips[i].Speed < 1500 {
-					proxy.IPCh <- ips[i]
-					ips[i].Insert()
-				}
-			}
-			wg.Done()
-		}(i)
+// Get 客户端发起请求,返回doc对象
+func Get(url string) (*goquery.Document, error) {
+	agent := gorequest.New()
+	agent.Client.Timeout = 10 * time.Second
+	res, _, errs := agent.Get(url).End()
+	if errs != nil {
+		log.Fatal(errs[0])
 	}
-	wg.Wait()
+	res.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
 }
 
-// CheckDBIP 检查数据库中的有效ip
-func CheckDBIP() {
-	conn.SetDB(db)
-	conn.SetCol(col)
-	ip := &model.IP{}
-	ips := ip.FindAll()
-	var wg sync.WaitGroup
-	len := len(ips)
-	wg.Add(len)
-	for i := 0; i < len; i++ {
-		go func(i int) {
-			const (
-				pollURL = conf.CheckURL
-			)
-			var testIP string
-			if ips[i].Type2 == "https" {
-				testIP = "https://" + ips[i].Data
-			} else {
-				testIP = "http://" + ips[i].Data
-			}
+// GetResponse .
+func GetResponse(url string) (gorequest.Response, error) {
+	agent := gorequest.New()
+	agent.Client.Timeout = 30 * time.Second
+	tempIP := <-proxy.IPCh
+	defer func() { proxy.IPCh <- tempIP }()
+	ip := "http://" + tempIP.Data
+	var (
+		res   gorequest.Response
+		errs  []error
+		index int
+	)
 
-			begin := time.Now()
-			agent := gorequest.New()
-			// 设置2s超时时间，以防长时间不响应
-			agent.Client.Timeout = 5 * time.Second
-			resp, _, errs := agent.Proxy(testIP).Get(pollURL).End()
-			if errs != nil {
-				wg.Done()
-				log.Println(errs[0])
-				return
+	// 更换代理ip重复请求,直到请求成功或者超过请求限制（防止请求死循环）
+	for res == nil || res.StatusCode != 200 {
+		index++
+		res, _, errs = agent.Proxy(ip).Get(url).End()
+		if errs != nil {
+			log.Println(errs[0])
+			proxy.IPCh <- tempIP
+			tempIP = <-proxy.IPCh
+			ip = "http://" + tempIP.Data
+			if index > 5 {
+				return nil, errs[0]
 			}
-			defer resp.Body.Close()
-			if resp.StatusCode == 200 {
-				ips[i].Speed = time.Now().Sub(begin).Nanoseconds() / 1000 / 1000 //ms
-				if ips[i].Speed < 1500 {
-					proxy.IPCh <- ips[i]
-					ips[i].Insert()
-				}
-			}
-			wg.Done()
-		}(i)
+		}
 	}
-	wg.Wait()
+	res.Body.Close()
+	return res, nil
 }

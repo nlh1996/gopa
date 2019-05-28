@@ -13,7 +13,7 @@ var IPCh chan *model.IP
 func Init() []*model.IP {
 	IPCh = make(chan *model.IP, 100)
 	var wg sync.WaitGroup
-	funs := []func() []*model.IP{
+	funs := []func() []*model.IP {
 		//Data5u,
 		Feiyi,
 		//IP66, //need to remove it

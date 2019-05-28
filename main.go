@@ -3,7 +3,7 @@ package main
 import (
 	"pachong/client"
 	"pachong/conn"
-	"pachong/controller/hoperun"
+	"pachong/controller/umei"
 	"pachong/proxy"
 )
 
@@ -18,6 +18,7 @@ func main() {
 	// client.CheckDBIP()
 
 	// 爬虫demo
-	// gamersky.Init()
-	hoperun.Init()
+	//gamersky.Init()
+	//hoperun.Init()
+	umei.Init()
 }

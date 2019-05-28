@@ -23,6 +23,7 @@ func Init() {
 	doc, err := client.Request(index)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	var urlList []string
 	getUrlList(doc, &urlList)

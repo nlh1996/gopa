@@ -5,4 +5,6 @@ const (
 	MgoURL = "mongodb://localhost:27017"
 	// CheckURL 代理ip检测地址
 	CheckURL = "http://httpbin.org/get"
+	// ImgPath 图片下载地址
+	ImgPath = "C:/Users/mayn/Desktop/Download/"
 )
