@@ -2,12 +2,12 @@ package main
 
 import (
 	"pachong/client"
-	"pachong/controller/umei"
+	"pachong/conn"
 	"pachong/proxy"
 )
 
 func main() {
-	// conn.Init()
+	conn.Init()
 	ips := proxy.Init()
 	/*以下两种ip代理池二选一 */
 	// 抓取最新的代理ip
@@ -19,5 +19,5 @@ func main() {
 	// 爬虫demo
 	//gamersky.Init()
 	//hoperun.Init()
-	umei.Init()
+	//umei.Init()
 }

@@ -72,7 +72,6 @@ func GetResponse(url string) (gorequest.Response, error) {
 		errs  []error
 		index int
 	)
-
 	// 更换代理ip重复请求,直到请求成功或者超过请求限制（防止请求死循环）
 	for res == nil || res.StatusCode != 200 {
 		index++

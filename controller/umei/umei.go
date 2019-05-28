@@ -17,8 +17,6 @@ const (
 
 // Init .
 func Init() {
-	// conn.SetDB(db)
-	// conn.SetCol(col)
 	doc, err := client.Get(index)
 	if err != nil {
 		fmt.Println(err)
@@ -32,8 +30,8 @@ func Init() {
 	for i := 0; i < len; i++ {
 		go func(i int) {
 			reg := regexp.MustCompile(`\w+`)
-			timeString := reg.FindAllString(urlList[i], -1)
-			fileName := fmt.Sprintf("%s.%s", timeString[8], timeString[9])
+			tmp := reg.FindAllString(urlList[i], -1)
+			fileName := fmt.Sprintf("%s.%s", tmp[8], tmp[9])
 			client.DownLoadImg(urlList[i], fileName)
 			wg.Done()
 		}(i)

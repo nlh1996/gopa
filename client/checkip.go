@@ -19,8 +19,8 @@ const (
 
 // CheckIP 检查ip代理池的有效ip,
 func CheckIP(ips []*model.IP) {
-	// conn.SetDB(db)
-	// conn.SetCol(col)
+	conn.SetDB(db)
+	conn.SetCol(col)
 	var wg sync.WaitGroup
 	len := len(ips)
 	wg.Add(len)

@@ -8,7 +8,7 @@ import (
 	"pachong/utils"
 )
 
-// DownLoadImg 图片下载.
+// DownLoadImg 图片下载，需要图片地址和图片的名字。
 func DownLoadImg(imgURL string, fileName string) {
 	res, err := GetResponse(imgURL)
 	if err != nil {
