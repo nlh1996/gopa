@@ -30,8 +30,8 @@ func init() {
 }
 
 // SendLog 发送日志信息
-func SendLog(msg string, info string, lv uint8) {
-	log.Msg = msg
+func SendLog(err error, info string, lv uint8) {
+	log.Msg = err.Error()
 	log.Info = info
 	log.Level = lv
 	bytesData, _ := json.Marshal(log)

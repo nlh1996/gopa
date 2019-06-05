@@ -24,7 +24,7 @@ func Init() {
 	conn.SetCol(col)
 	doc, err := client.GetDocument(index)
 	if err != nil {
-		logs.SendLog(err.Error(), "", 5)
+		logs.SendLog(err, "", 5)
 	}
 	var newsList []string
 	getNewsList(doc, &newsList)
@@ -49,7 +49,7 @@ func getNewsList(doc *goquery.Document, newsList *[]string) {
 func getNews(url string, wg *sync.WaitGroup) {
 	doc, err := client.GetDocument(url)
 	if err != nil {
-		logs.SendLog(err.Error(), "", 5)
+		logs.SendLog(err, "", 5)
 		wg.Done()
 		return
 	}

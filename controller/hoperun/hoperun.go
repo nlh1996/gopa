@@ -1,9 +1,9 @@
 package hoperun
 
 import (
-	"fmt"
 	"pachong/client"
 	"pachong/conn"
+	"pachong/logs"
 	"pachong/model"
 	"sync"
 
@@ -22,7 +22,7 @@ func Init() {
 	conn.SetCol(col)
 	doc, err := client.GetDocument(index)
 	if err != nil {
-		fmt.Println(err)
+		logs.SendLog(err, "", 5)
 		return
 	}
 	var urlList []string
@@ -31,7 +31,7 @@ func Init() {
 	var wg sync.WaitGroup
 	wg.Add(len)
 	for i := 0; i < len; i++ {
-		go getNews(urlList[i], &wg)
+		go getNews(urlList[i], &wg, i)
 	}
 	wg.Wait()
 }
@@ -43,7 +43,7 @@ func getUrlList(doc *goquery.Document, urlList *[]string) {
 	})
 }
 
-func getNews(url string, wg *sync.WaitGroup) {
+func getNews(url string, wg *sync.WaitGroup, i int) {
 	if url[:4] != "http" {
 		url = "http://www.hoperun.com" + url
 	} else {
@@ -52,7 +52,7 @@ func getNews(url string, wg *sync.WaitGroup) {
 	}
 	doc, err := client.GetDocument(url)
 	if err != nil {
-		fmt.Println(err)
+		logs.SendLog(err, "", 5)
 		wg.Done()
 		return
 	}
@@ -64,6 +64,5 @@ func getNews(url string, wg *sync.WaitGroup) {
 		data.Content = selection.Next().Text()
 		data.Insert()
 	})
-
 	wg.Done()
 }

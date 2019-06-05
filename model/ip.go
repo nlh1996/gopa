@@ -5,7 +5,7 @@ import (
 	"pachong/conn"
 	"pachong/utils"
 
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // IP struct
@@ -44,11 +44,22 @@ func (obj *IP) FindAll() []*IP {
 	if err := cur.Err(); err != nil {
 		log.Fatal(err)
 	}
-
-	del, err := col.DeleteMany(utils.GetCtx(), bson.M{})
-	if err != nil {
-			log.Fatal(err)
-	}
-	log.Println( del.DeletedCount)
 	return results
+}
+
+// Del 从数据库中删除
+func (obj *IP) Del() {
+	del, err := conn.GetCol().DeleteOne(utils.GetCtx(), bson.D{{"data", obj.Data}})
+	if err != nil {
+		log.Println(err.Error(), del)
+	}
+}
+
+// Count 统计ip数量
+func (obj *IP) Count() int64 {
+	num, err := conn.GetCol().CountDocuments(utils.GetCtx(), bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return num
 }

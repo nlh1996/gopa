@@ -8,17 +8,17 @@ import (
 
 func main() {
 	conn.Init()
-	ips := proxy.Init()
-	/* 以下两种ip代理池二选一 */
-	// 抓取最新的代理ip
-	proxy.CheckIP(ips)
-
-	// 使用数据库中的ip,并且去除失效的ip
-	// proxy.CheckDBIP()
-
+	proxy.Init()
+	if proxy.Count() < 100 {
+		// 抓取最新的代理ip
+		ips := proxy.Get()
+		proxy.CheckIP(ips)
+	} else {
+		// 不抓取直接使用数据库中的ip
+		proxy.CheckDBIP()
+	}
 	// 爬虫demo
 	gamersky.Init()
-	//hoperun.Init()
+	// hoperun.Init()
 	// umei.Init()
-
 }

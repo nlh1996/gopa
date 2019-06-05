@@ -19,9 +19,15 @@ const (
 	col = "ips"
 )
 
-// Init 爬取所有的代理ip
-func Init() []*model.IP {
-	IPCh = make(chan *model.IP, 100)
+// Init .
+func Init() {
+	IPCh = make(chan *model.IP, 200)
+	conn.SetDB(db)
+	conn.SetCol(col)
+}
+
+// Get 爬取所有的代理ip
+func Get() []*model.IP {
 	var wg sync.WaitGroup
 	funs := []func() []*model.IP{
 		//Data5u,
@@ -54,8 +60,6 @@ func Init() []*model.IP {
 
 // CheckIP 检查ip代理池的有效ip,
 func CheckIP(ips []*model.IP) {
-	conn.SetDB(db)
-	conn.SetCol(col)
 	var wg sync.WaitGroup
 	len := len(ips)
 	wg.Add(len)
@@ -96,8 +100,6 @@ func CheckIP(ips []*model.IP) {
 
 // CheckDBIP 检查数据库中的有效ip
 func CheckDBIP() {
-	conn.SetDB(db)
-	conn.SetCol(col)
 	ip := &model.IP{}
 	ips := ip.FindAll()
 	var wg sync.WaitGroup
@@ -117,12 +119,12 @@ func CheckDBIP() {
 
 			begin := time.Now()
 			agent := gorequest.New()
-			// 设置2s超时时间，以防长时间不响应
+			// 设置5s超时时间，以防长时间不响应
 			agent.Client.Timeout = 5 * time.Second
 			resp, _, errs := agent.Proxy(testIP).Get(pollURL).End()
 			if errs != nil {
+				ips[i].Del()
 				wg.Done()
-				log.Println(errs[0])
 				return
 			}
 			defer resp.Body.Close()
@@ -130,11 +132,18 @@ func CheckDBIP() {
 				ips[i].Speed = time.Now().Sub(begin).Nanoseconds() / 1000 / 1000 //ms
 				if ips[i].Speed < 1500 {
 					IPCh <- ips[i]
-					ips[i].Insert()
+				} else {
+					ips[i].Del()
 				}
 			}
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
+}
+
+// Count .
+func Count() int64 {
+	ip := &model.IP{}
+	return ip.Count()
 }
