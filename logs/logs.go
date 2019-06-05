@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"pachong/conf"
+	"time"
 )
 
 // Log .
@@ -17,7 +18,10 @@ type Log struct {
 	Msg     string `json:"short_message"`
 }
 
-var log Log
+var (
+	log    Log
+	client *http.Client
+)
 
 func init() {
 	log = Log{
@@ -27,6 +31,7 @@ func init() {
 		Info:    "",
 		Msg:     "",
 	}
+	client = &http.Client{Timeout: 10 * time.Second}
 }
 
 // SendLog 发送日志信息
@@ -36,12 +41,11 @@ func SendLog(err error, info string, lv uint8) {
 	log.Level = lv
 	bytesData, _ := json.Marshal(log)
 	reader := bytes.NewReader(bytesData)
-	client := &http.Client{}
 	req, _ := http.NewRequest("POST", conf.LogURL, reader)
 	req.Header.Set("content-type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err, resp)
 	}
-	fmt.Println(log)
+	resp.Body.Close()
 }

@@ -10,18 +10,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// Env .
-type Env struct {
+// Mgo .
+type Mgo struct {
 	client *mongo.Client
 	db     *mongo.Database
 	col    *mongo.Collection
 }
 
-var mgo *Env
+var mgo *Mgo
 
 // Init 数据库连接.
 func Init() {
-	mgo = &Env{}
+	mgo = &Mgo{}
 	var err error
 	mgo.client, err = mongo.NewClient(options.Client().ApplyURI(conf.MgoURL))
 	ctxWithTimeout, _ := context.WithTimeout(context.Background(), 5*time.Second)
