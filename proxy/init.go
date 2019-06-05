@@ -5,7 +5,6 @@ import (
 	"pachong/conf"
 	"pachong/conn"
 	"pachong/model"
-	"pachong/proxy"
 	"sync"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 
 // IPCh 使用通道作为本爬虫框架的代理ip池，可全局调用.
 var IPCh chan *model.IP
+
 const (
 	db  = "IPTABLE"
 	col = "ips"
@@ -84,7 +84,7 @@ func CheckIP(ips []*model.IP) {
 			if resp.StatusCode == 200 {
 				ips[i].Speed = time.Now().Sub(begin).Nanoseconds() / 1000 / 1000 //ms
 				if ips[i].Speed < 1500 {
-					proxy.IPCh <- ips[i]
+					IPCh <- ips[i]
 					ips[i].Insert()
 				}
 			}

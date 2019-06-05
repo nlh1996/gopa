@@ -20,7 +20,7 @@ const (
 func Init() {
 	conn.SetDB(db)
 	conn.SetCol(col)
-	doc, err := client.Request(index)
+	doc, err := client.GetDocument(index)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -50,7 +50,7 @@ func getNews(url string, wg *sync.WaitGroup) {
 		wg.Done()
 		return
 	}
-	doc, err := client.Request(url)
+	doc, err := client.GetDocument(url)
 	if err != nil {
 		fmt.Println(err)
 		wg.Done()

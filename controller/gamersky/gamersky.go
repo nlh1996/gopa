@@ -2,9 +2,9 @@ package gamersky
 
 import (
 	"fmt"
-	"log"
 	"pachong/client"
 	"pachong/conn"
+	"pachong/logs"
 	"pachong/model"
 	"regexp"
 	"sync"
@@ -22,9 +22,9 @@ const (
 func Init() {
 	conn.SetDB(db)
 	conn.SetCol(col)
-	doc, err := client.Request(index)
+	doc, err := client.GetDocument(index)
 	if err != nil {
-		log.Println(err)
+		logs.SendLog(err.Error(), "", 5)
 	}
 	var newsList []string
 	getNewsList(doc, &newsList)
@@ -47,9 +47,9 @@ func getNewsList(doc *goquery.Document, newsList *[]string) {
 
 // 爬取新闻内容
 func getNews(url string, wg *sync.WaitGroup) {
-	doc, err := client.Request(url)
+	doc, err := client.GetDocument(url)
 	if err != nil {
-		log.Println(err)
+		logs.SendLog(err.Error(), "", 5)
 		wg.Done()
 		return
 	}

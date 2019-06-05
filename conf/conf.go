@@ -7,4 +7,6 @@ const (
 	CheckURL = "http://httpbin.org/get"
 	// ImgPath 指定图片下载位置
 	ImgPath = ""
+	// LogURL 日志分析节点
+	LogURL	= "http://212.129.149.224:1514/gelf"
 )
