@@ -24,7 +24,7 @@ func (obj *IP) Insert() {
 	}
 }
 
-// FindAll 得到所有ip并且清空集合
+// FindAll 得到所有代理ip
 func (obj *IP) FindAll() []*IP {
 	var results []*IP
 	col := conn.GetCol()
@@ -47,7 +47,7 @@ func (obj *IP) FindAll() []*IP {
 	return results
 }
 
-// Del 从数据库中删除
+// Del 从数据库中删除ip
 func (obj *IP) Del() {
 	del, err := conn.GetCol().DeleteOne(utils.GetCtx(), bson.D{{"data", obj.Data}})
 	if err != nil {

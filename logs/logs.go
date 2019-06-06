@@ -24,7 +24,7 @@ var (
 )
 
 func init() {
-	log = Log{
+	log = Log {
 		Version: "1.1",
 		Host:    "爬虫",
 		Level:   0,
