@@ -25,7 +25,7 @@ func IP89() (result []*model.IP) {
 	}
 
 	if resp.StatusCode != 200 {
-		clog.Warn(err.Error())
+	//	clog.Warn(err.Error())
 		return
 	}
 	defer resp.Body.Close()

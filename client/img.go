@@ -23,7 +23,6 @@ func DownLoadImg(imgURL string, fileName string) {
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		fmt.Println(err)
 	}
-
 	file, err := os.Create(path + fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -33,5 +32,5 @@ func DownLoadImg(imgURL string, fileName string) {
 	writer := bufio.NewWriter(file)
 	// copy写入文件
 	written, _ := io.Copy(writer, reader)
-	fmt.Printf("Total length: %d", written)
+	fmt.Println(path + fileName + " Total length:", written)
 }
