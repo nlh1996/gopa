@@ -77,7 +77,7 @@ func CheckIP(ips []*model.IP) {
 
 			begin := time.Now()
 			agent := gorequest.New()
-			// 设置2s超时时间，以防长时间不响应
+			// 设置5s超时时间，以防长时间不响应
 			agent.Client.Timeout = 5 * time.Second
 			resp, _, errs := agent.Proxy(testIP).Get(pollURL).End()
 			if errs != nil {

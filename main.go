@@ -2,7 +2,7 @@ package main
 
 import (
 	"pachong/conn"
-	"pachong/controller/umei"
+	"pachong/controller/gamersky"
 	"pachong/proxy"
 )
 
@@ -18,7 +18,9 @@ func main() {
 		proxy.CheckDBIP()
 	}
 	// 爬虫demo
-	// gamersky.Init()
+	gamersky.Init()
 	// hoperun.Init()
-	umei.Init()
+	// umei.Init()
+	// weather.Init()
+
 }

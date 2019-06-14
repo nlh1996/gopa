@@ -46,6 +46,7 @@ func SendLog(err error, info string, lv uint8) {
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err, resp)
+		return 
 	}
 	resp.Body.Close()
 }
