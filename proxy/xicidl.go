@@ -17,8 +17,8 @@ func Xici() (result []*model.IP) {
 	req.Header.Add("If-None-Match", "W/\"25a308c48a1a3215afe70ed6aba0361e\"")
 	req.Header.Add("Upgrade-Insecure-Requests", "1")
 	resp, err := client.Do(req)
-	if err != nil {
-		log.Println(err.Error())
+	if err != nil || resp.StatusCode != 200 {
+		log.Println(err)
 		return
 	}
 	defer resp.Body.Close()
