@@ -11,7 +11,11 @@ import (
 //PLP get ip from proxylistplus.com
 func PLP() (result []*model.IP) {
 	pollURL := "https://list.proxylistplus.com/Fresh-HTTP-Proxy-List-1"
-	doc, _ := htmlquery.LoadURL(pollURL)
+	doc, err := htmlquery.LoadURL(pollURL)
+	if err != nil {
+		clog.Warn(err.Error())
+		return
+	}
 	trNode, err := htmlquery.Find(doc, "//div[@class='hfeed site']//table[@class='bg']//tbody//tr")
 	if err != nil {
 		clog.Warn(err.Error())

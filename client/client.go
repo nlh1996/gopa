@@ -30,7 +30,7 @@ func GetDocument(url string) (*goquery.Document, error) {
 			proxy.IPCh <- tempIP
 			tempIP = <-proxy.IPCh
 			ip = "http://" + tempIP.Data
-			if index > 5 {
+			if index > 3 {
 				return nil, errs[0]
 			}
 		}

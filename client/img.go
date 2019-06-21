@@ -6,13 +6,15 @@ import (
 	"io"
 	"os"
 	"pachong/utils"
+	"sync"
 )
 
 // DownLoadImg 图片下载，需要图片地址和图片的名字。
-func DownLoadImg(imgURL string, fileName string) {
+func DownLoadImg(imgURL string, fileName string, wg *sync.WaitGroup) {
 	res, err := GetResponse(imgURL)
 	if err != nil {
 		fmt.Println(err)
+		wg.Done()
 		return
 	}
 	path := utils.GetCurrentDirectory()
@@ -26,11 +28,13 @@ func DownLoadImg(imgURL string, fileName string) {
 	file, err := os.Create(path + fileName)
 	if err != nil {
 		fmt.Println(err)
+		wg.Done()
 		return
 	}
 	// 获得文件的writer对象
 	writer := bufio.NewWriter(file)
 	// copy写入文件
 	written, _ := io.Copy(writer, reader)
-	fmt.Println(path + fileName + " Total length:", written)
+	fmt.Println(path+fileName+" Total length:", written)
+	wg.Done()
 }

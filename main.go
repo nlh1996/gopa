@@ -1,26 +1,26 @@
 package main
 
 import (
-	"pachong/conn"
-	"pachong/controller/gamersky"
+	"pachong/controller/bobopic"
 	"pachong/proxy"
 )
 
 func main() {
-	conn.Init()
+	// conn.Init()
 	proxy.Init()
-	if proxy.Count() < 100 {
-		// 抓取最新的代理ip
-		ips := proxy.Get()
-		proxy.CheckIP(ips)
-	} else {
-		// 不抓取直接使用数据库中的ip
-		proxy.CheckDBIP()
-	}
+	// // if proxy.Count() < 100 {
+	// // 抓取最新的代理ip
+	ips := proxy.Get()
+	proxy.CheckIP(ips)
+	// } else {
+	// 	// 不抓取直接使用数据库中的ip
+	// 	proxy.CheckDBIP()
+	// }
 	// 爬虫demo
-	gamersky.Init()
+	// gamersky.Init()
 	// hoperun.Init()
 	// umei.Init()
 	// weather.Init()
+	bobopic.Init()
 
 }
