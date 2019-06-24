@@ -8,8 +8,8 @@ import (
 func main() {
 	// conn.Init()
 	proxy.Init()
-	// // if proxy.Count() < 100 {
-	// // 抓取最新的代理ip
+	//if proxy.Count() < 100 {
+	//抓取最新的代理ip
 	ips := proxy.Get()
 	proxy.CheckIP(ips)
 	// } else {
@@ -22,5 +22,4 @@ func main() {
 	// umei.Init()
 	// weather.Init()
 	bobopic.Init()
-
 }

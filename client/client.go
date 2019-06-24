@@ -46,7 +46,7 @@ func GetDocument(url string) (*goquery.Document, error) {
 // GetResponse 使用代理ip发起请求，返回response.
 func GetResponse(url string) (gorequest.Response, error) {
 	agent := gorequest.New()
-	agent.Client.Timeout = 30 * time.Second
+	agent.Client.Timeout = 20 * time.Second
 	tempIP := <-proxy.IPCh
 	defer func() { proxy.IPCh <- tempIP }()
 	ip := "http://" + tempIP.Data
@@ -63,7 +63,7 @@ func GetResponse(url string) (gorequest.Response, error) {
 			proxy.IPCh <- tempIP
 			tempIP = <-proxy.IPCh
 			ip = "http://" + tempIP.Data
-			if index > 5 {
+			if index > 3 {
 				return nil, errs[0]
 			}
 		}

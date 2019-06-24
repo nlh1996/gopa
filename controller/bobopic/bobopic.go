@@ -32,11 +32,14 @@ func Init() {
 				tmp := reg.FindAllString(url, -1)
 				fileName := fmt.Sprintf("%d%s", index, tmp[0])
 				wg.Add(1)
-				go client.DownLoadImg(url, fileName, &wg)
+				go func() {
+					client.DownLoadImg(url, fileName)
+					wg.Done()
+				}()
 			}
 		}
 	}()
-	// len := len(urlList)
+
 	wg.Wait()
 	for {
 		if len(ch) == 0{
@@ -65,13 +68,13 @@ func getUrlList(doc *goquery.Document, ch *chan string) {
 			*ch <- url
 		}
 	})
-	doc.Find("article>div").Each(func(i int, selection *goquery.Selection) {
-		url, _ := selection.Attr("style")
-		if url != "" {
-			url = url[22:]
-			reg := regexp.MustCompile(`[^);]*`)
-			url := reg.FindAllString(url, -1)
-			*ch <- url[0]
-		}
-	})
+	// doc.Find("article>div").Each(func(i int, selection *goquery.Selection) {
+	// 	url, _ := selection.Attr("style")
+	// 	if url != "" {
+	// 		url = url[22:]
+	// 		reg := regexp.MustCompile(`[^);]*`)
+	// 		url := reg.FindAllString(url, -1)
+	// 		*ch <- url[0]
+	// 	}
+	// })
 }

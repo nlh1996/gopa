@@ -3,18 +3,17 @@ package client
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"pachong/utils"
-	"sync"
 )
 
+// var mutex = sync.Mutex{}
+
 // DownLoadImg 图片下载，需要图片地址和图片的名字。
-func DownLoadImg(imgURL string, fileName string, wg *sync.WaitGroup) {
+func DownLoadImg(imgURL string, fileName string) {
 	res, err := GetResponse(imgURL)
 	if err != nil {
 		fmt.Println(err)
-		wg.Done()
 		return
 	}
 	path := utils.GetCurrentDirectory()
@@ -28,13 +27,17 @@ func DownLoadImg(imgURL string, fileName string, wg *sync.WaitGroup) {
 	file, err := os.Create(path + fileName)
 	if err != nil {
 		fmt.Println(err)
-		wg.Done()
 		return
 	}
-	// 获得文件的writer对象
-	writer := bufio.NewWriter(file)
-	// copy写入文件
-	written, _ := io.Copy(writer, reader)
-	fmt.Println(path+fileName+" Total length:", written)
-	wg.Done()
+
+	bytes := make([]byte, 128*1024)
+	len, err := reader.Read(bytes)
+	if len < 0 || err != nil {
+		return
+	}
+	// 注意这里byte数组后的[0:len]，不然可能会导致写入多余的数据
+	_, _ = file.Write(bytes[:len])
+	// 写入文件
+	// written, _ := io.Copy(writer, reader)
+	fmt.Println(path + fileName)
 }
