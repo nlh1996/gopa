@@ -33,8 +33,7 @@ func Init() {
 				fileName := fmt.Sprintf("%d%s", index, tmp[0])
 				wg.Add(1)
 				go func() {
-					client.DownLoadImg(url, fileName)
-					wg.Done()
+					client.DownLoadImg(url, fileName, &wg)
 				}()
 			}
 		}

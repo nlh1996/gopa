@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"os"
 	"pachong/utils"
+	"sync"
 )
 
 // var mutex = sync.Mutex{}
 
 // DownLoadImg 图片下载，需要图片地址和图片的名字。
-func DownLoadImg(imgURL string, fileName string) {
+func DownLoadImg(imgURL string, fileName string, wg *sync.WaitGroup) {
+	defer	wg.Done()
 	res, err := GetResponse(imgURL)
 	if err != nil {
 		fmt.Println(err)
@@ -29,7 +31,6 @@ func DownLoadImg(imgURL string, fileName string) {
 		fmt.Println(err)
 		return
 	}
-
 	bytes := make([]byte, 128*1024)
 	len, err := reader.Read(bytes)
 	if len < 0 || err != nil {
