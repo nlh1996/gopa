@@ -32,9 +32,7 @@ func Init() {
 				tmp := reg.FindAllString(url, -1)
 				fileName := fmt.Sprintf("%d%s", index, tmp[0])
 				wg.Add(1)
-				go func() {
-					client.DownLoadImg(url, fileName, &wg)
-				}()
+				go client.DownLoadImg(url, fileName, &wg)
 			}
 		}
 	}()
