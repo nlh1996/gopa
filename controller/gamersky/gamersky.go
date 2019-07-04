@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"pachong/client"
 	"pachong/conn"
-	"pachong/logs"
 	"pachong/model"
 	"regexp"
 	"sync"
@@ -24,7 +23,8 @@ func Init() {
 	conn.SetCol(col)
 	doc, err := client.GetDocument(index)
 	if err != nil {
-		logs.SendLog(err, "", 5)
+		//logs.SendLog(err, "", 5)
+		fmt.Println(err)
 	}
 	var newsList []string
 	getNewsList(doc, &newsList)
@@ -49,7 +49,8 @@ func getNewsList(doc *goquery.Document, newsList *[]string) {
 func getNews(url string, wg *sync.WaitGroup) {
 	doc, err := client.GetDocument(url)
 	if err != nil {
-		logs.SendLog(err, "", 5)
+		//logs.SendLog(err, "", 5)
+		fmt.Println(err)
 		wg.Done()
 		return
 	}

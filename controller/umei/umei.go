@@ -32,8 +32,7 @@ func Init() {
 			reg := regexp.MustCompile(`\w+`)
 			tmp := reg.FindAllString(urlList[i], -1)
 			fileName := fmt.Sprintf("%s.%s", tmp[8], tmp[9])
-			client.DownLoadImg(urlList[i], fileName)
-			wg.Done()
+			client.DownLoadImg(urlList[i], fileName, &wg)
 		}(i)
 	}
 	wg.Wait()

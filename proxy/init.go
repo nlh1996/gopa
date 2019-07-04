@@ -3,6 +3,7 @@ package proxy
 import (
 	"log"
 	"pachong/conf"
+	"pachong/conn"
 	"pachong/model"
 	"sync"
 	"time"
@@ -21,8 +22,8 @@ const (
 // Init .
 func Init() {
 	IPCh = make(chan *model.IP, 200)
-	// conn.SetDB(db)
-	// conn.SetCol(col)
+	conn.SetDB(db)
+	conn.SetCol(col)
 }
 
 // Get 爬取所有的代理ip
@@ -88,7 +89,7 @@ func CheckIP(ips []*model.IP) {
 				ips[i].Speed = time.Now().Sub(begin).Nanoseconds() / 1000 / 1000 //ms
 				if ips[i].Speed < 1500 {
 					IPCh <- ips[i]
-					//ips[i].Insert()
+					ips[i].Insert()
 				}
 			}
 			wg.Done()
